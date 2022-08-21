@@ -14,9 +14,20 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   app.use(bodyParser.json());
 
   // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
+  app.get('/filteredimage', async (req, res)=>{
+    if(!req.query.image_url){
+      res.status(400).send({'message': 'bad request'});
+    }
+    const url = req.query.image_url;
+    const filterdpath = await filterImageFromURL(url);
+    res.sendFile(filterdpath, async () => {
+      await deleteLocalFiles([filterdpath])
+    });
+
+  });
   // GET /filteredimage?image_url={{URL}}
   // endpoint to filter an image from a public url.
-  // IT SHOULD
+  // IT SHOULD  
   //    1
   //    1. validate the image_url query
   //    2. call filterImageFromURL(image_url) to filter the image

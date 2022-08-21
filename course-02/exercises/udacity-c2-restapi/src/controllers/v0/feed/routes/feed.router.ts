@@ -18,13 +18,29 @@ router.get('/', async (req: Request, res: Response) => {
 
 //@TODO
 //Add an endpoint to GET a specific resource by Primary Key
+router.get('/:id', requireAuth, async (req: Request, res: Response) => {
+    const item = await FeedItem.findByPk(req.params.id);
+    res.status(200).send(item);
+});
 
 // update a specific resource
 router.patch('/:id', 
     requireAuth, 
     async (req: Request, res: Response) => {
         //@TODO try it yourself
-        res.status(500).send("not implemented")
+        const {feed} = req.body;
+        if(!feed){
+            return res.status(404).send('bad request');
+        }
+        const item = await FeedItem.findByPk(req.params.id);
+        FeedItem.update({
+            caption: feed.caption,
+            url: feed.caption,
+            createdAt: new Date()
+        }, {
+            where : {id: req.params.id}
+        }); 
+        return res.status(200).send(`success`)
 });
 
 
@@ -43,8 +59,8 @@ router.get('/signed-url/:fileName',
 router.post('/', 
     requireAuth, 
     async (req: Request, res: Response) => {
-    const caption = req.body.caption;
-    const fileName = req.body.url;
+    const caption  = req.body.caption;
+    const fileName  = req.body.url;
 
     // check Caption is valid
     if (!caption) {
@@ -58,9 +74,8 @@ router.post('/',
 
     const item = await new FeedItem({
             caption: caption,
-            url: fileName
+            url: fileName,
     });
-
     const saved_item = await item.save();
 
     saved_item.url = AWS.getGetSignedUrl(saved_item.url);

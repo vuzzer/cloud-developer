@@ -21,7 +21,7 @@ describe('divide', () => {
 
   it('should divide 6 by 3', () => {
     const result = divide(6,3);
-    expect(result).to.equal(2);
+    expect(result).to.equal(1);
   });
 
   it('should divide 5 and 2', () => {
